@@ -19,3 +19,12 @@ exports_files([
     "LICENSE-CODE.md",
     "MODULE.bazel",
 ])
+
+# Keep package identities beside the runtime TAR producers.
+exports_files(
+    [
+        "runtime_packages.json",
+        "runtime_packages.md",
+    ],
+    visibility = ["//visibility:public"],
+)

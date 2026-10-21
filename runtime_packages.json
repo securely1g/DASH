@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "module": "sonic-dash",
+  "packages": {
+    "libsai": {
+      "runtime_target": "//:runtime",
+      "control_fields": {
+        "Package": "libsai",
+        "Version": "1.0.0",
+        "Multi-Arch": "no"
+      }
+    }
+  }
+}

@@ -12,7 +12,7 @@ Public targets:
 | --- | --- |
 | `//:runtime` | Stripped `libsai.so`, `libdashsaimetadata.so`, and four generated `/etc/dash` pipeline files |
 | `//:runtime.debug_symbols` | Matching detached symbols under `/usr/lib/debug/.build-id` |
-| `//:sdk` | Installed public headers and a linkable DASH SAI library for C++ consumers |
+| `//:sdk` | Installed public headers and a DASH SAI library that C++ consumers can link |
 | `//bazel:runtime_test` | Installed SDK API call, pipeline validation, dependency closure, debug IDs/checksums, and GDB source-line lookup |
 
 Native Trixie AMD64 and ARM64 are the validation configurations. Cross-compiling
@@ -26,7 +26,7 @@ bazel test //bazel:runtime_test \
 ```
 
 AMD64 is the default. Bazel 8.5.1, compiler/tool dependencies and generator wheels
-are declared. The tests use the CI userspace's `readelf`, `objcopy` and GDB to
+are declared. The tests use `readelf`, `objcopy` and GDB from the CI environment to
 inspect outputs. Compilation uses the declared shared toolchain and target
 dependencies; target dependency imports do not count as source builds of those
 external libraries.
@@ -50,6 +50,6 @@ The draft prerequisites are:
 | `rules_distroless@0.9.4.sonic.9` | [Complete C++ header imports, registry #91](https://github.com/securely1g/sonic-bazel-registry/pull/91) |
 | `p4lang-pi@0.1.3.sonic.1` | [PI source producer, registry #88](https://github.com/securely1g/sonic-bazel-registry/pull/88) |
 | `p4c@1.2.4.2.sonic.1` | [P4C source producer, registry #86](https://github.com/securely1g/sonic-bazel-registry/pull/86) |
-| `sonic-build-infra@0.0.18-15f89e5b1e8fa72301ab52ff3655a5abdc059822` | [Shared tools #53](https://github.com/securely1g/sonic-build-infra/pull/53), [GCC/Libtool adapter #54](https://github.com/securely1g/sonic-build-infra/pull/54), [registry #87](https://github.com/securely1g/sonic-bazel-registry/pull/87) |
+| `sonic-build-infra@0.0.18-15f89e5b1e8fa72301ab52ff3655a5abdc059822` | [Shared tools #53](https://github.com/securely1g/sonic-build-infra/pull/53), [GCC and library tool adapter #54](https://github.com/securely1g/sonic-build-infra/pull/54), [registry #87](https://github.com/securely1g/sonic-bazel-registry/pull/87) |
 
 The two `Native source and TARs` checks are required on `main`. Their successful source builds and installed runtime/debug tests are merge gates; a completed analysis or a queued workflow does not satisfy them.
