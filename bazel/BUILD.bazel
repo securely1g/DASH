@@ -13,6 +13,8 @@ exports_files([
 py_binary(
     name = "prepare",
     srcs = ["prepare.py"],
+    # Match the locked generator wheels even when the consumer uses Python 3.11.
+    python_version = "3.13",
     deps = [requirement(name) for name in [
         "jinja2",
         "pyyaml",
