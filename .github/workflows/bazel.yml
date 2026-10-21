@@ -73,7 +73,7 @@ jobs:
           git -C "$RUNNER_TEMP/p4-registry" remote add origin \
             https://github.com/securely1g/sonic-bazel-registry.git
           git -C "$RUNNER_TEMP/p4-registry" fetch --depth=1 origin \
-            78a456aa001f2c156c356f2ffd3fa0e4dc31fc12
+            a292fce67f4e4621233c37609a5d1d959081eee8
           git -C "$RUNNER_TEMP/p4-registry" checkout --detach FETCH_HEAD
           git -C "$RUNNER_TEMP/p4-registry" rev-parse HEAD > artifacts/registry-commit.txt
           python3 - <<'PY'
@@ -91,10 +91,11 @@ jobs:
           flags=(--platforms=@sonic_build_infra//platforms:${{ matrix.platform }} --host_platform=@sonic_build_infra//platforms:${{ matrix.platform }} --jobs=4)
           bazel test "${flags[@]}" //bazel:runtime_test \
             --build_event_json_file=artifacts/build-events.json 2>&1 | tee artifacts/build.log
-          bazel build "${flags[@]}" //:runtime //:runtime.debug_symbols //:sdk
+          bazel build "${flags[@]}" //:runtime //:runtime.debug_symbols //:sdk //:runtime_packages.json
           cp "$(bazel cquery "${flags[@]}" //:runtime --output=files)" artifacts/runtime.tar
           cp "$(bazel cquery "${flags[@]}" //:runtime.debug_symbols --output=files)" artifacts/debug.tar
-          sha256sum artifacts/runtime.tar artifacts/debug.tar > artifacts/SHA256SUMS
+          cp "$(bazel cquery "${flags[@]}" //:runtime_packages.json --output=files)" artifacts/runtime_packages.json
+          sha256sum artifacts/runtime.tar artifacts/debug.tar artifacts/runtime_packages.json > artifacts/SHA256SUMS
           cp MODULE.bazel.lock artifacts/generated-MODULE.bazel.lock
           git restore .bazelrc
           git diff --exit-code
