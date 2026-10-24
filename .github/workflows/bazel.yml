@@ -67,13 +67,13 @@ jobs:
           test ! -e MODULE.bazel.lock
           test -z "$(git ls-files -- MODULE.bazel.lock)"
           git check-ignore MODULE.bazel.lock
-          # Draft-only integration of the separate producer/infra registry PRs.
+          # Draft-only producer recipes on the published infrastructure registry.
           # Freeze one checkout for the whole run; replace the main endpoint.
           git init "$RUNNER_TEMP/p4-registry"
           git -C "$RUNNER_TEMP/p4-registry" remote add origin \
             https://github.com/securely1g/sonic-bazel-registry.git
           git -C "$RUNNER_TEMP/p4-registry" fetch --depth=1 origin \
-            98a69f50268954152b8e87c26ea70cde54ef7136
+            28aa49bcc89aeba650753e6c7e46648201e893d8
           git -C "$RUNNER_TEMP/p4-registry" checkout --detach FETCH_HEAD
           git -C "$RUNNER_TEMP/p4-registry" rev-parse HEAD > artifacts/registry-commit.txt
           python3 - <<'PY'
