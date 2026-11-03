@@ -22,6 +22,15 @@ Both legacy compile recipes retain their warning policies, except that
 search candidates provided by Bazel. Missing headers and other warnings promoted by `-Werror`
 still fail the build.
 
+The foreign-Make launcher writes the complete ordered `CPPFLAGS` value into a
+GCC driver response file before executing Make. This keeps recursive Make's
+exported command-line overrides below Linux's per-string limit. The driver
+expands the file at the original argument position, preserving include and
+macro ordering relative to `CFLAGS`/`CXXFLAGS`. The original Makefile separates
+compilation from linking, so the large include and linker lists do not enter
+one compiler invocation. Compiler choices, link flags, feature options and
+invalid-option rejection are unchanged.
+
 The adapter links the declared PI, gRPC, protobuf and Abseil libraries into
 `libsai.so`'s dependency list and rejects unresolved symbols at link time. The
 runtime test also loads the extracted library with `RTLD_NOW` from a separate
@@ -37,6 +46,7 @@ Public targets:
 | `//:sdk` | Installed public headers and a DASH SAI library for C++ consumers to link |
 | `//:runtime_packages.json` | `libsai` identity from the existing Debian control, dependencies derived from the runtime, and the runtime TAR hash |
 | `//bazel:runtime_test` | Standalone runtime loading, installed SDK switch/generated DASH VIP API queries, pipeline validation, dependency closure, debug IDs/checksums, and GDB source-line lookup |
+| `//bazel:make_flags_test` | Original recursive Make adapter with native GCC/G++, long Make-export negative control, ordered and quoted preprocessor flags, exact link flags and identical short/long-flag binaries |
 
 Native Trixie AMD64 and ARM64 are the validation configurations. Cross-compiling
 the source generator/metadata executables is not supported. Set both platforms

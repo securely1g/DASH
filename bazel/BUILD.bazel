@@ -7,8 +7,22 @@ package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "Makefile.dash",
+    "make_with_flags.sh",
     "requirements_lock.txt",
 ])
+
+py_test(
+    name = "make_flags_test",
+    srcs = ["make_flags_test.py"],
+    args = [
+        "$(rootpath :make_with_flags.sh)",
+        "$(rootpath :Makefile.dash)",
+    ],
+    data = [
+        "Makefile.dash",
+        "make_with_flags.sh",
+    ],
+)
 
 py_binary(
     name = "prepare",
@@ -50,8 +64,8 @@ py_test(
         "$(rootpaths @dash_deps//:packages)",
     ],
     data = [
-        ":sdk_consumer",
         ":runtime_loader",
+        ":sdk_consumer",
         "//:runtime",
         "//:runtime.debug_symbols",
         "@dash_deps//:packages",
