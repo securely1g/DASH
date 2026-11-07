@@ -39,8 +39,6 @@ on:
 
 jobs:
   build:
-    # This source-only Bazel follow-up validates TARs without Debian producers.
-    if: github.head_ref != 'codex/foreign-compiler-response-files' && github.ref != 'refs/heads/codex/foreign-compiler-response-files'
     name: Build and Test DASH Pipeline
     runs-on: ubuntu-22.04
     env:
