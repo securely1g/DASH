@@ -1,5 +1,6 @@
 """Exercise the original recursive Make adapter with ordered GCC flags."""
 
+import errno
 import hashlib
 import json
 import os
@@ -132,13 +133,34 @@ def main():
         (probe / "Makefile").write_text(
             "all:\n\t$(file >makeflags.txt,$(MAKEFLAGS))\n\t@/bin/true\n"
         )
+        small = subprocess.run(
+            [tools["make"], "--no-print-directory", "-C", str(probe),
+             "GXX_FLAGS=" + common, "LDFLAGS=" + common_link],
+            capture_output=True, text=True,
+        )
+        assert small.returncode == 0, small.stderr
         old = subprocess.run(
             [tools["make"], "--no-print-directory", "-C", str(probe),
              "GXX_FLAGS=" + large_cpp, "LDFLAGS=" + large_link],
             capture_output=True, text=True,
         )
         assert len((probe / "makeflags.txt").read_bytes()) > 131072
-        assert old.returncode != 0 and "Argument list too long" in old.stderr, old.stderr
+        assert old.returncode != 0, old.stderr
+        # Make under PRoot/QEMU can report only child status 127. Prove the
+        # actual exec limit using its captured export, rather than accepting
+        # an arbitrary failed child or relying on Make's diagnostic wording.
+        exec_probe = subprocess.run(
+            [sys.executable, "-c",
+             "import os, sys\nfrom pathlib import Path\n"
+             "env = dict(os.environ, MAKEFLAGS=Path(sys.argv[1]).read_text().removesuffix('\\n'))\n"
+             "try:\n    os.execve('/bin/true', ['/bin/true'], env)\n"
+             "except OSError as error:\n    print(error.errno)\n",
+             str(probe / "makeflags.txt")],
+            capture_output=True, text=True,
+        )
+        assert exec_probe.returncode == 0 and exec_probe.stdout.strip() == str(errno.E2BIG), (
+            exec_probe.returncode, exec_probe.stdout, exec_probe.stderr
+        )
 
         # A preprocessor-only response would reorder CPPFLAGS after native
         # compiler include options. Keep this concrete negative control: the
