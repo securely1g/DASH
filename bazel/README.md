@@ -22,14 +22,22 @@ Both legacy compile recipes retain their warning policies, except that
 search candidates provided by Bazel. Missing headers and other warnings promoted by `-Werror`
 still fail the build.
 
-The foreign-Make launcher writes the complete ordered `CPPFLAGS` value into a
-GCC driver response file before executing Make. This keeps recursive Make's
-exported command-line overrides below Linux's per-string limit. The driver
-expands the file at the original argument position, preserving include and
-macro ordering relative to `CFLAGS`/`CXXFLAGS`. The original Makefile separates
-compilation from linking, so the large include and linker lists do not enter
-one compiler invocation. Compiler choices, link flags, feature options and
-invalid-option rejection are unchanged.
+The foreign-Make launcher keeps complete ordered flags out of recursive
+Make's environment. `CPPFLAGS` uses a GCC driver response file at its original
+position. `LDFLAGS` uses build-infra's `configure_linker_flags.sh` and
+`configure_environment.sh`: the shared compiler launcher expands the private
+vector and shortens absolute library searches relative to each compiler's
+working directory, retaining their original driver order and precedence.
+
+For example, SAI metadata's `CXX="$(CXX) $(LDFLAGS)"` override turns a
+130,698-byte linker vector into a 131,872-byte `MAKEFLAGS` value. Make then
+cannot launch `which`, reporting a misleading missing-doxygen error. A plain
+GCC linker response file gets past Make but still overflows GCC's exported
+`COLLECT_GCC_OPTIONS` when it starts `collect2`. Reusing both shared adapters
+handles these boundaries without dropping paths or forwarding them behind
+GCC's default library searches. Metadata/library compile commands keep their
+CPP response; their separate link commands consume the private linker vector.
+Compiler choices, feature options and invalid-option rejection are unchanged.
 
 The adapter links the declared PI, gRPC, protobuf and Abseil libraries into
 `libsai.so`'s dependency list and rejects unresolved symbols at link time. The
@@ -70,21 +78,35 @@ external libraries.
 rules split the deployed runtime and debug TARs from the same linked ELF.
 
 Local builds and CI use the maintained registry `main` endpoint from `.bazelrc`.
-PI, p4c, shared tools and foreign-build support are published there. CI does not
-replace that endpoint with a temporary snapshot. Workflow artifacts contain both
-TARs, generated package metadata, checksums, the source revision, test results,
-the generated lock and the resolved module graph. The recorded registry tips before and after the build
-are observations of `main`, not a frozen registry selection.
+This draft also selects complete, commit-pinned source recipes for four unpublished
+modules through `draft_source_dependencies.MODULE.bazel` and
+`rules_distroless_override.MODULE.bazel`. Those files preserve each registry
+recipe's archive, ordered patches and overlays, rather than changing the registry
+endpoint or selecting only part of its implementation.
 
-The selected published modules are:
+The Infra `.28` minimum supplies `configure_linker_flags.sh` and the current shared
+compiler adapters. PI/P4C `.3` keep their compatible source SDK graph; Distroless
+`.18` supplies compact lock transport for that graph. Native CI installs `file`
+before repository evaluation so APT can distinguish real ELF libraries from
+linker scripts. Both native architectures retain the same build and runtime tests.
 
-| Module | Published support |
+| Module | Selected support |
 | --- | --- |
-| `rules_distroless@0.9.4.sonic.13` | [Published APT payload and control support](https://github.com/securely1g/sonic-bazel-registry/tree/main/modules/rules_distroless/0.9.4.sonic.13) |
-| `p4lang-pi@0.1.3.sonic.2` | [PI source and runtime metadata, registry #107](https://github.com/securely1g/sonic-bazel-registry/pull/107) |
-| `p4c@1.2.4.2.sonic.2` | [P4C source and runtime metadata, registry #109](https://github.com/securely1g/sonic-bazel-registry/pull/109) |
-| `sonic-build-infra@0.0.22-a12bc826d6f811a157db5c7c02a2fe033896cc14` | [Shared build tools and metadata, registry #120](https://github.com/securely1g/sonic-bazel-registry/pull/120) |
-| `rules_foreign_cc@0.16.0.sonic.1` | [Header search classifications, registry #119](https://github.com/securely1g/sonic-bazel-registry/pull/119) |
+| `rules_distroless@0.9.4.sonic.18` | [Compact APT lock transport, registry #237](https://github.com/securely1g/sonic-bazel-registry/pull/237) |
+| `p4lang-pi@0.1.3.sonic.3` | [PI source SDK and linker transport, registry #289](https://github.com/securely1g/sonic-bazel-registry/pull/289) |
+| `p4c@1.2.4.2.sonic.3` | [P4C source and native execution support, registry #276](https://github.com/securely1g/sonic-bazel-registry/pull/276) |
+| `sonic-build-infra@0.0.28-8e15b3341e4665f7bf6ed9be0aaaf1c92dcf9175` | [Shared flag adapters, native linking and complete APT lock, registry #287](https://github.com/securely1g/sonic-bazel-registry/pull/287) |
+| `rules_foreign_cc@0.16.0.sonic.1` | [Published header search classifications, registry #119](https://github.com/securely1g/sonic-bazel-registry/pull/119) |
+
+Remove each temporary override once its exact version is published on `main`,
+then resolve and validate through the maintained registry again before marking
+this consumer ready. The root-only override fragments are not part of the
+canonical registry module dependency declaration.
+
+Workflow artifacts contain both TARs, generated package metadata, checksums, the
+source revision, test results, the generated lock and the resolved module graph.
+The recorded registry tips before and after the build are observations of `main`,
+not a frozen registry selection.
 
 The two `Native source and TARs` checks validate source builds, generated package
 metadata and installed runtime/debug behavior on AMD64 and ARM64. A completed
