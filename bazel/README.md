@@ -24,19 +24,19 @@ still fail the build.
 
 The foreign-Make launcher keeps complete ordered flags out of recursive
 Make's environment. `CPPFLAGS` uses a GCC driver response file at its original
-position. `LDFLAGS` uses build-infra's `configure_linker_flags.sh` and
+position. `LDFLAGS` uses the shared `configure_linker_flags.sh` and
 `configure_environment.sh`: the shared compiler launcher expands the private
 vector and shortens absolute library searches relative to each compiler's
 working directory, retaining their original driver order and precedence.
 
-For example, SAI metadata's `CXX="$(CXX) $(LDFLAGS)"` override turns a
+For example, the SAI metadata `CXX="$(CXX) $(LDFLAGS)"` override turns a
 130,698-byte linker vector into a 131,872-byte `MAKEFLAGS` value. Make then
-cannot launch `which`, reporting a misleading missing-doxygen error. A plain
+cannot launch `which`, reporting a misleading missing `doxygen` error. A plain
 GCC linker response file gets past Make but still overflows GCC's exported
 `COLLECT_GCC_OPTIONS` when it starts `collect2`. Reusing both shared adapters
 handles these boundaries without dropping paths or forwarding them behind
 GCC's default library searches. Metadata/library compile commands keep their
-CPP response; their separate link commands consume the private linker vector.
+`CPPFLAGS` response; their separate link commands consume the private linker vector.
 Compiler choices, feature options and invalid-option rejection are unchanged.
 
 The adapter links the declared PI, gRPC, protobuf and Abseil libraries into
@@ -85,7 +85,7 @@ recipe's archive, ordered patches and overlays, rather than changing the registr
 endpoint or selecting only part of its implementation.
 
 The Infra `.28` minimum supplies `configure_linker_flags.sh` and the current shared
-compiler adapters. PI/P4C `.3` keep their compatible source SDK graph; Distroless
+compiler adapters. PI/P4C `.3` keep their compatible source SDK graph; `rules_distroless`
 `.18` supplies compact lock transport for that graph. Native CI installs `file`
 before repository evaluation so APT can distinguish real ELF libraries from
 linker scripts. Both native architectures retain the same build and runtime tests.
