@@ -78,7 +78,7 @@ external libraries.
 rules split the deployed runtime and debug TARs from the same linked ELF.
 
 Local builds and CI use the registry snapshot in `.bazelrc`. It includes the
-PI and Infra candidates together with the published P4C and Distroless entries.
+PI and Infra candidates together with the published `p4c` and `rules_distroless` entries.
 Bazel resolves all four using their registered source, patch and overlay recipes.
 
 The Infra `.28` minimum supplies `configure_linker_flags.sh` and the current shared
