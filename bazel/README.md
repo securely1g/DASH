@@ -78,11 +78,9 @@ external libraries.
 rules split the deployed runtime and debug TARs from the same linked ELF.
 
 Local builds and CI use the maintained registry `main` endpoint from `.bazelrc`.
-This draft also selects complete, commit-pinned source recipes for four unpublished
-modules through `draft_source_dependencies.MODULE.bazel` and
-`rules_distroless_override.MODULE.bazel`. Those files preserve each registry
-recipe's archive, ordered patches and overlays, rather than changing the registry
-endpoint or selecting only part of its implementation.
+P4C and rules_distroless resolve from their published registry entries. The
+draft uses complete archive, patch and overlay recipes from
+`draft_source_dependencies.MODULE.bazel` for the Infra and PI updates under review.
 
 The Infra `.28` minimum supplies `configure_linker_flags.sh` and the current shared
 compiler adapters. PI/P4C `.3` keep their compatible source SDK graph; `rules_distroless`
