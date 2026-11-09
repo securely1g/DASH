@@ -77,13 +77,12 @@ external libraries.
 `-g` and `--strip=never` preserve build-time symbols; shared `sonic_deploy_tar`
 rules split the deployed runtime and debug TARs from the same linked ELF.
 
-Local builds and CI use the maintained registry `main` endpoint from `.bazelrc`.
-P4C and rules_distroless resolve from their published registry entries. The
-draft uses complete archive, patch and overlay recipes from
-`draft_source_dependencies.MODULE.bazel` for the Infra and PI updates under review.
+Local builds and CI use the registry snapshot in `.bazelrc`. It includes the
+PI and Infra candidates together with the published P4C and Distroless entries.
+Bazel resolves all four using their registered source, patch and overlay recipes.
 
 The Infra `.28` minimum supplies `configure_linker_flags.sh` and the current shared
-compiler adapters. PI/P4C `.3` keep their compatible source SDK graph; `rules_distroless`
+compiler adapters. PI `.4` and P4C `.3` supply their source SDKs; `rules_distroless`
 `.18` supplies compact lock transport for that graph. Native CI installs `file`
 before repository evaluation so APT can distinguish real ELF libraries from
 linker scripts. Both native architectures retain the same build and runtime tests.
@@ -91,20 +90,18 @@ linker scripts. Both native architectures retain the same build and runtime test
 | Module | Selected support |
 | --- | --- |
 | `rules_distroless@0.9.4.sonic.18` | [Compact APT lock transport, registry #237](https://github.com/securely1g/sonic-bazel-registry/pull/237) |
-| `p4lang-pi@0.1.3.sonic.3` | [PI source SDK and linker transport, registry #289](https://github.com/securely1g/sonic-bazel-registry/pull/289) |
+| `p4lang-pi@0.1.3.sonic.4` | [PI source SDK and linker transport, registry #289](https://github.com/securely1g/sonic-bazel-registry/pull/289) |
 | `p4c@1.2.4.2.sonic.3` | [P4C source and native execution support, registry #276](https://github.com/securely1g/sonic-bazel-registry/pull/276) |
 | `sonic-build-infra@0.0.28-58112470001b1c450fd9e859079e92c62c236242` | [Shared flag adapters, native linking and complete APT lock, registry #287](https://github.com/securely1g/sonic-bazel-registry/pull/287) |
 | `rules_foreign_cc@0.16.0.sonic.1` | [Published header search classifications, registry #119](https://github.com/securely1g/sonic-bazel-registry/pull/119) |
 
-Remove each temporary override once its exact version is published on `main`,
-then resolve and validate through the maintained registry again before marking
-this consumer ready. The root-only override fragments are not part of the
-canonical registry module dependency declaration.
+After the Infra and PI entries land, restore the canonical registry `main`
+endpoint in `.bazelrc` and rerun both native checks.
 
 Workflow artifacts contain both TARs, generated package metadata, checksums, the
 source revision, test results, the generated lock and the resolved module graph.
-The recorded registry tips before and after the build are observations of `main`,
-not a frozen registry selection.
+The archived `.bazelrc` identifies the selected snapshot. The separate before- and
+after-build records report the observed `main` tip.
 
 The two `Native source and TARs` checks validate source builds, generated package
 metadata and installed runtime/debug behavior on AMD64 and ARM64. A completed
