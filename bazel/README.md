@@ -92,7 +92,7 @@ linker scripts. Both native architectures retain the same build and runtime test
 | `rules_distroless@0.9.4.sonic.18` | [Compact APT lock transport, registry #237](https://github.com/securely1g/sonic-bazel-registry/pull/237) |
 | `p4lang-pi@0.1.3.sonic.4` | [PI source SDK and linker transport, registry #289](https://github.com/securely1g/sonic-bazel-registry/pull/289) |
 | `p4c@1.2.4.2.sonic.3` | [P4C source and native execution support, registry #276](https://github.com/securely1g/sonic-bazel-registry/pull/276) |
-| `sonic-build-infra@0.0.28-58112470001b1c450fd9e859079e92c62c236242` | [Shared flag adapters, native linking and complete APT lock, registry #287](https://github.com/securely1g/sonic-bazel-registry/pull/287) |
+| `sonic-build-infra@0.0.28-9965823498ab54816de5addb6084638470dd04d7` | [Shared flag adapters, native linking and complete APT lock, registry #287](https://github.com/securely1g/sonic-bazel-registry/pull/287) |
 | `rules_foreign_cc@0.16.0.sonic.1` | [Published header search classifications, registry #119](https://github.com/securely1g/sonic-bazel-registry/pull/119) |
 
 After the Infra and PI entries land, restore the canonical registry `main`
