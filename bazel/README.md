@@ -77,7 +77,7 @@ external libraries.
 `-g` and `--strip=never` preserve build-time symbols; shared `sonic_deploy_tar`
 rules split the deployed runtime and debug TARs from the same linked ELF.
 
-Local builds and CI resolve PI, build-infra, P4C and rules_distroless from the
+Local builds and CI resolve PI, build-infra, P4C and `rules_distroless` from the
 SONiC registry’s maintained `main` branch. Each module uses its published source
 archive, patches and overlays.
 
