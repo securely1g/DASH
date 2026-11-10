@@ -77,9 +77,9 @@ external libraries.
 `-g` and `--strip=never` preserve build-time symbols; shared `sonic_deploy_tar`
 rules split the deployed runtime and debug TARs from the same linked ELF.
 
-Local builds and CI use the registry snapshot in `.bazelrc`. It includes the
-PI and Infra candidates together with the published `p4c` and `rules_distroless` entries.
-Bazel resolves all four using their registered source, patch and overlay recipes.
+Local builds and CI resolve PI, build-infra, P4C and rules_distroless from the
+SONiC registry’s maintained `main` branch. Each module uses its published source
+archive, patches and overlays.
 
 The Infra `.28` minimum supplies `configure_linker_flags.sh` and the current shared
 compiler adapters. PI `.4` and P4C `.3` supply their source SDKs; `rules_distroless`
@@ -95,13 +95,10 @@ linker scripts. Both native architectures retain the same build and runtime test
 | `sonic-build-infra@0.0.28-9965823498ab54816de5addb6084638470dd04d7` | [Shared flag adapters, native linking and complete APT lock, registry #287](https://github.com/securely1g/sonic-bazel-registry/pull/287) |
 | `rules_foreign_cc@0.16.0.sonic.1` | [Published header search classifications, registry #119](https://github.com/securely1g/sonic-bazel-registry/pull/119) |
 
-After the Infra and PI entries land, restore the canonical registry `main`
-endpoint in `.bazelrc` and rerun both native checks.
-
 Workflow artifacts contain both TARs, generated package metadata, checksums, the
 source revision, test results, the generated lock and the resolved module graph.
-The archived `.bazelrc` identifies the selected snapshot. The separate before- and
-after-build records report the observed `main` tip.
+The archived `.bazelrc` identifies the registry endpoint. CI records the
+registry’s `main` commit before and after each build.
 
 The two `Native source and TARs` checks validate source builds, generated package
 metadata and installed runtime/debug behavior on AMD64 and ARM64. A completed
