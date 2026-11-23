@@ -88,7 +88,7 @@ libraries from linker scripts. Both native architectures retain the same build a
 
 | Module | Selected support |
 | --- | --- |
-| `rules_distroless@0.9.4.sonic.25` | [Fixed APT roots and raw payload support, registry #325](https://github.com/securely1g/sonic-bazel-registry/pull/325) |
+| `rules_distroless@0.9.4.sonic.26` | [Fixed APT roots and raw payload support, registry #325](https://github.com/securely1g/sonic-bazel-registry/pull/325) |
 | `p4lang-pi@0.1.3.sonic.7` | [Native PI SDK and runtime libraries, registry #322](https://github.com/securely1g/sonic-bazel-registry/pull/322) |
 | `p4c@1.2.4.2.sonic.7` | [P4C source and native execution support, registry #276](https://github.com/securely1g/sonic-bazel-registry/pull/276) |
 | `sonic-build-infra@0.0.44-35726399908a3beb947174e9359f902077928289` | [Shared toolchain and updated Trixie package selections, registry #323](https://github.com/securely1g/sonic-bazel-registry/pull/323) |
